@@ -1,9 +1,9 @@
 name: Build U200B Matrix APK
 
 on:
-  push:
+  pull_request:
     branches:
-      - chatgpt-u200b-apk-build-20260820
+      - master
 
 permissions:
   contents: read
