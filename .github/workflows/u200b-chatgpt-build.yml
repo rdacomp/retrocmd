@@ -21,7 +21,8 @@ jobs:
               chatgpt-build/u200b-project.b64.002 \
               chatgpt-build/u200b-project.b64.003 \
               chatgpt-build/u200b-project.b64.004 \
-              chatgpt-build/u200b-project.b64.005 \
+              chatgpt-build/u200b-project.b64.005a \
+              chatgpt-build/u200b-project.b64.005b \
               | base64 -d > /tmp/u200b-project.zip
           unzip -t /tmp/u200b-project.zip
           mkdir -p build-u200b
