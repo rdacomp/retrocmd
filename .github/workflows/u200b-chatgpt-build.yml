@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - chatgpt-u200b-apk-build-20260820
+  pull_request:
+    branches:
+      - master
 
 permissions:
   contents: read
