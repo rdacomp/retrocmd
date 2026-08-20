@@ -27,6 +27,8 @@ jobs:
           unzip -t /tmp/u200b-project.zip
           mkdir -p build-u200b
           unzip -q /tmp/u200b-project.zip -d build-u200b
+          sed -i 's/new Random(200B)/new Random(0x200BL)/g' build-u200b/app/src/main/java/com/dmitriy/u200btextutility/MatrixRainView.java
+          grep -n 'new Random' build-u200b/app/src/main/java/com/dmitriy/u200btextutility/MatrixRainView.java
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
