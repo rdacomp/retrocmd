@@ -15,10 +15,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Unpack U200B project
+      - name: Restore and unpack U200B project
         run: |
+          cat chatgpt-build/u200b-project.b64.001 \
+              chatgpt-build/u200b-project.b64.002 \
+              chatgpt-build/u200b-project.b64.003 \
+              chatgpt-build/u200b-project.b64.004 \
+              chatgpt-build/u200b-project.b64.005 \
+              | base64 -d > /tmp/u200b-project.zip
+          unzip -t /tmp/u200b-project.zip
           mkdir -p build-u200b
-          unzip -q chatgpt-build/u200b-project.zip -d build-u200b
+          unzip -q /tmp/u200b-project.zip -d build-u200b
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
