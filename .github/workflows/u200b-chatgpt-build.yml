@@ -30,6 +30,15 @@ jobs:
           sed -i 's/new Random(200B)/new Random(0x200BL)/g' build-u200b/app/src/main/java/com/dmitriy/u200btextutility/MatrixRainView.java
           grep -n 'new Random' build-u200b/app/src/main/java/com/dmitriy/u200btextutility/MatrixRainView.java
 
+      - name: Restore persistent signing key
+        run: |
+          base64 -d chatgpt-build/u200b-release.p12.b64 > /tmp/u200b-release.p12
+          keytool -list -v \
+            -storetype PKCS12 \
+            -keystore /tmp/u200b-release.p12 \
+            -storepass U200B-Release-2026 \
+            -alias u200b-release >/dev/null
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -53,16 +62,6 @@ jobs:
         working-directory: build-u200b
         run: gradle --no-daemon :app:assembleRelease
 
-      - name: Generate release key
-        run: |
-          keytool -genkeypair -v \
-            -keystore /tmp/u200b-release.jks \
-            -storepass U200BBuild2026 \
-            -keypass U200BBuild2026 \
-            -alias u200b \
-            -keyalg RSA -keysize 3072 -validity 3650 \
-            -dname "CN=U200B Text Matrix,O=U200B Build,C=US"
-
       - name: Align, sign, and verify APK
         run: |
           BT="$ANDROID_SDK_ROOT/build-tools/36.0.0"
@@ -71,10 +70,11 @@ jobs:
           FINAL="build-u200b/app/build/outputs/apk/release/U200B_TextMatrix_Android_3.3_INSTALL.apk"
           "$BT/zipalign" -p -f 4 "$UNSIGNED" "$ALIGNED"
           "$BT/apksigner" sign \
-            --ks /tmp/u200b-release.jks \
-            --ks-key-alias u200b \
-            --ks-pass pass:U200BBuild2026 \
-            --key-pass pass:U200BBuild2026 \
+            --ks /tmp/u200b-release.p12 \
+            --ks-type PKCS12 \
+            --ks-key-alias u200b-release \
+            --ks-pass pass:U200B-Release-2026 \
+            --key-pass pass:U200B-Release-2026 \
             --v1-signing-enabled true \
             --v2-signing-enabled true \
             --v3-signing-enabled true \
@@ -86,7 +86,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: U200B-TextMatrix-Android-3.3
+          name: U200B-TextMatrix-Android-3.3-PersistentKey
           path: |
             build-u200b/app/build/outputs/apk/release/U200B_TextMatrix_Android_3.3_INSTALL.apk
             build-u200b/app/build/outputs/apk/release/signature-report.txt
